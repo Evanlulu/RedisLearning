@@ -1,0 +1,37 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <button @click="count--">-</button>
+        <span>{{ count }}</span>
+        <button v-on:click="fn()">+</button>
+        <h1 v-show="isShow">測試</h1>
+    </div>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script>
+        const app = new Vue({
+                el : '#app',
+                data: {
+                    count: 100,
+                    isShow: true
+                },
+                methods: {
+                    fn(){
+                        //this 當前new出來的實例
+                        console.log('提供邏輯代碼');
+                        this.isShow = !this.isShow;
+                    }
+                },
+            
+            })
+    </script>
+</body>
+</html>
