@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using OwlEvan.Data;
+using OwlEvan.Models;
 
 namespace OwlEvan.Controllers
 {
@@ -7,74 +9,95 @@ namespace OwlEvan.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly List<Product> _products = new List<Product>()
-        {
-            new Product { Id = 1, Name = "Product 1", Price = 10.99m },
-            new Product { Id = 2, Name = "Product 2", Price = 20.99m }
-        };
+        private readonly AppDbContext _context;
 
-
-        [HttpGet]
-        public IActionResult GetProducts()
+        public ProductController(AppDbContext context)
         {
-            return Ok(_products);
+            _context = context;
         }
 
 
-        [HttpGet("{id}")]
-        public IActionResult GetProduct(int id)
+        // GET: api/products
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-            var product = _products.Find(p => p.Id == id);
+            return await _context.Products.ToListAsync();
+        }
+
+
+        // GET: api/products/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Product>> GetProduct(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+
             if (product == null)
             {
                 return NotFound();
             }
-            return Ok(product);
+
+            return product;
         }
 
-
+        // POST: api/products
         [HttpPost]
-        public IActionResult CreateProduct(Product product)
+        public async Task<ActionResult<Product>> CreateProduct(Product product)
         {
-            _products.Add(product);
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
             return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
         }
 
-
+        // PUT: api/products/{id}
         [HttpPut("{id}")]
-        public IActionResult UpdateProduct(int id, Product product)
+        public async Task<IActionResult> UpdateProduct(int id, Product product)
         {
-            var existingProduct = _products.Find(p => p.Id == id);
-            if (existingProduct == null)
+            if (id != product.Id)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(product).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProductExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        // DELETE: api/products/delete/{id}
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
             {
                 return NotFound();
             }
 
-            existingProduct.Name = product.Name;
-            existingProduct.Price = product.Price;
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
-        
-        [HttpDelete("{id}")]
-        public IActionResult DeleteProduct(int id)
+
+        private bool ProductExists(int id)
         {
-            var existingProduct = _products.Find(p => p.Id == id);
-            if (existingProduct == null)
-            {
-                return NotFound();
-            }
-
-            _products.Remove(existingProduct);
-
-            return NoContent();
+            return _context.Products.Any(e => e.Id == id);
         }
-    }
-
-    public class Product
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public decimal Price { get; set; }
     }
 }

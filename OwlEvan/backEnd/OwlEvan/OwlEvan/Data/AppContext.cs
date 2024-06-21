@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using OwlEvan.Controllers;
+using OwlEvan.Models;
 
 namespace OwlEvan.Data;
 
