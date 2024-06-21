@@ -1,7 +1,4 @@
 ﻿{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=10.10.53.221;Database=TESTING_L;User Id=evan;Password=evan;TrustServerCertificate=True;Encrypt=True"
-  },
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,

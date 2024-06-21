@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OwlEvan.Data;
 using OwlEvan.Models;
+using OwlEvan.Services;
 
 namespace OwlEvan.Controllers
 {
@@ -9,43 +10,38 @@ namespace OwlEvan.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly ProductsService _productsService;
 
-        public ProductController(AppDbContext context)
+        public ProductController(ProductsService productsService)
         {
-            _context = context;
+            _productsService = productsService;
         }
-
 
         // GET: api/products
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-            return await _context.Products.ToListAsync();
+            var products = await _productsService.GetAllProductsAsync();
+            return Ok(products);
         }
-
 
         // GET: api/products/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-
+            var product = await _productsService.GetProductByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
-
-            return product;
+            return Ok(product);
         }
 
         // POST: api/products
         [HttpPost]
         public async Task<ActionResult<Product>> CreateProduct(Product product)
         {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-
+            await _productsService.AddProductAsync(product);
             return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
         }
 
@@ -58,46 +54,30 @@ namespace OwlEvan.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(product).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _productsService.UpdateProductAsync(product);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ProductExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return NoContent();
         }
 
-        // DELETE: api/products/delete/{id}
-        [HttpDelete("delete/{id}")]
+        // DELETE: api/products/{id}
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _productsService.GetProductByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
 
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-
+            await _productsService.DeleteProductAsync(product);
             return NoContent();
-        }
-
-        private bool ProductExists(int id)
-        {
-            return _context.Products.Any(e => e.Id == id);
         }
     }
 }
