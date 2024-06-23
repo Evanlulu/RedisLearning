@@ -27,7 +27,7 @@ public class BlogComments implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键
+     * pk
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
@@ -68,12 +68,12 @@ public class BlogComments implements Serializable {
     private Boolean status;
 
     /**
-     * 创建时间
+     * 創建時間
      */
     private LocalDateTime createTime;
 
     /**
-     * 更新时间
+     * 更新時間
      */
     private LocalDateTime updateTime;
 

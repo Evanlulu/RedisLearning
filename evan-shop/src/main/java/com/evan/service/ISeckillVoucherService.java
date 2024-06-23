@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- * 秒杀优惠券表，与优惠券是一对一关系 服务类
+ * 秒殺優惠券表，与優惠券是一对一关系 服务類
  * </p>
  *
  * @author Evan

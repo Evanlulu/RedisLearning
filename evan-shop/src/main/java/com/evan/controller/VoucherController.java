@@ -14,7 +14,7 @@ import javax.annotation.Resource;
  * </p>
  *
  * @author Evan
- * @since 2021-12-22
+ * @since 20240623
  */
 @RestController
 @RequestMapping("/voucher")
@@ -25,8 +25,8 @@ public class VoucherController {
 
     /**
      * 新增普通券
-     * @param voucher 优惠券信息
-     * @return 优惠券id
+     * @param voucher 優惠券
+     * @return id
      */
     @PostMapping
     public Result addVoucher(@RequestBody Voucher voucher) {
@@ -35,9 +35,9 @@ public class VoucherController {
     }
 
     /**
-     * 新增秒杀券
-     * @param voucher 优惠券信息，包含秒杀信息
-     * @return 优惠券id
+     * 新增秒殺劵
+     * @param voucher 優惠券信息，包含秒殺信息
+     * @return 優惠券id
      */
     @PostMapping("seckill")
     public Result addSeckillVoucher(@RequestBody Voucher voucher) {
@@ -46,9 +46,9 @@ public class VoucherController {
     }
 
     /**
-     * 查询店铺的优惠券列表
-     * @param shopId 店铺id
-     * @return 优惠券列表
+     * 查询商店的優惠券列表
+     * @param shopId 商店id
+     * @return 優惠券列表
      */
     @GetMapping("/list/{shopId}")
     public Result queryVoucherOfShop(@PathVariable("shopId") Long shopId) {

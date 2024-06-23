@@ -27,7 +27,7 @@ public class VoucherOrder implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键
+     * pk
      */
     @TableId(value = "id", type = IdType.INPUT)
     private Long id;
@@ -53,27 +53,27 @@ public class VoucherOrder implements Serializable {
     private Integer status;
 
     /**
-     * 下单时间
+     * 下单時間
      */
     private LocalDateTime createTime;
 
     /**
-     * 支付时间
+     * 支付時間
      */
     private LocalDateTime payTime;
 
     /**
-     * 核销时间
+     * 核销時間
      */
     private LocalDateTime useTime;
 
     /**
-     * 退款时间
+     * 退款時間
      */
     private LocalDateTime refundTime;
 
     /**
-     * 更新时间
+     * 更新時間
      */
     private LocalDateTime updateTime;
 

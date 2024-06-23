@@ -28,7 +28,7 @@ public class UserInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键，用户id
+     * pk，用户id
      */
     @TableId(value = "user_id", type = IdType.AUTO)
     private Long userId;
@@ -74,12 +74,12 @@ public class UserInfo implements Serializable {
     private Boolean level;
 
     /**
-     * 创建时间
+     * 創建時間
      */
     private LocalDateTime createTime;
 
     /**
-     * 更新时间
+     * 更新時間
      */
     private LocalDateTime updateTime;
 

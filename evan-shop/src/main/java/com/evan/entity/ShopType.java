@@ -28,13 +28,13 @@ public class ShopType implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键
+     * pk
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
-     * 类型名称
+     * 類型名称
      */
     private String name;
 
@@ -49,13 +49,13 @@ public class ShopType implements Serializable {
     private Integer sort;
 
     /**
-     * 创建时间
+     * 創建時間
      */
     @JsonIgnore
     private LocalDateTime createTime;
 
     /**
-     * 更新时间
+     * 更新時間
      */
     @JsonIgnore
     private LocalDateTime updateTime;

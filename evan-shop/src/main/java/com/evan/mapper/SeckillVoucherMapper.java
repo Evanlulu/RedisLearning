@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * <p>
- * 秒杀优惠券表，与优惠券是一对一关系 Mapper 接口
+ * 秒殺優惠券表，与優惠券是一对一关系 Mapper 接口
  * </p>
  *
  * @author Evan
