@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author Evan
- * @since 2021-12-22
+ * @since 20240623
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -28,28 +28,28 @@ public class Shop implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键
+     * 主鍵
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
-     * 商铺名称
+     * 商店名
      */
     private String name;
 
     /**
-     * 商铺类型的id
+     * 類型ID
      */
     private Long typeId;
 
     /**
-     * 商铺图片，多个图片以','隔开
+     * 圖片
      */
     private String images;
 
     /**
-     * 商圈，例如陆家嘴
+     * 商圈
      */
     private String area;
 
@@ -59,7 +59,7 @@ public class Shop implements Serializable {
     private String address;
 
     /**
-     * 经度
+     * 輕度
      */
     private Double x;
 
@@ -69,37 +69,37 @@ public class Shop implements Serializable {
     private Double y;
 
     /**
-     * 均价，取整数
+     * 均價
      */
     private Long avgPrice;
 
     /**
-     * 销量
+     * 銷量
      */
     private Integer sold;
 
     /**
-     * 评论数量
+     * 評論數
      */
     private Integer comments;
 
     /**
-     * 评分，1~5分，乘10保存，避免小数
+     * 評分
      */
     private Integer score;
 
     /**
-     * 营业时间，例如 10:00-22:00
+     * 營業時間
      */
     private String openHours;
 
     /**
-     * 创建时间
+     * 創建時間
      */
     private LocalDateTime createTime;
 
     /**
-     * 更新时间
+     * 更新時間
      */
     private LocalDateTime updateTime;
 
