@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author Evan
- * @since 2021-12-22
+ * @since 20240624
  */
 public interface ShopTypeMapper extends BaseMapper<ShopType> {
 

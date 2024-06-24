@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 
 /**
  * <p>
- *  服务实现類
+ *  服務实现類
  * </p>
  *
  * @author Evan
- * @since 2021-12-22
+ * @since 20240624
  */
 @Service
 public class ShopTypeServiceImpl extends ServiceImpl<ShopTypeMapper, ShopType> implements IShopTypeService {

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
  * </p>
  *
  * @author Evan
- * @since 2021-12-22
+ * @since 20240624
  */
 @RestController
 @RequestMapping("/follow")

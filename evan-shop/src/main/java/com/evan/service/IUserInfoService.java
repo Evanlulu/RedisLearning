@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- *  服务類
+ *  服務類
  * </p>
  *
  * @author Evan

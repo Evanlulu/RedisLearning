@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author Evan
- * @since 2021-12-22
+ * @since 20240624
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -43,7 +43,7 @@ public class BlogComments implements Serializable {
     private Long blogId;
 
     /**
-     * 关联的1级评论id，如果是一级评论，则值为0
+     * 關联的1级评论id，如果是一级评论，则值为0
      */
     private Long parentId;
 
@@ -63,7 +63,7 @@ public class BlogComments implements Serializable {
     private Integer liked;
 
     /**
-     * 状态，0：正常，1：被举报，2：禁止查看
+     * 狀態，0：正常，1：被举报，2：禁止查看
      */
     private Boolean status;
 

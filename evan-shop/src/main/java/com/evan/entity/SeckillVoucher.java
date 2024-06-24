@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 秒殺優惠券表，与優惠券是一对一关系
+ * 秒殺優惠券表，與優惠券是一對一關系
  * </p>
  *
  * @author Evan
@@ -27,7 +27,7 @@ public class SeckillVoucher implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 关联的優惠券的id
+     * 關联的優惠券的id
      */
     @TableId(value = "voucher_id", type = IdType.INPUT)
     private Long voucherId;

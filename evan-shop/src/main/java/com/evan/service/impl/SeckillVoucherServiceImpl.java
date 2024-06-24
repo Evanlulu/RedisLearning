@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * <p>
- * 秒殺優惠券表，与優惠券是一对一关系 服务实现類
+ * 秒殺優惠券表，與優惠券是一對一關系 服務实现類
  * </p>
  *
  * @author Evan

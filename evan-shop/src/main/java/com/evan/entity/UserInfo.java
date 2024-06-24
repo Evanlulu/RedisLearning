@@ -49,7 +49,7 @@ public class UserInfo implements Serializable {
     private Integer fans;
 
     /**
-     * 关注的人的数量
+     * 關注的人的数量
      */
     private Integer followee;
 

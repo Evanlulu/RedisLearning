@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author Evan
- * @since 2021-12-22
+ * @since 20240624
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -33,27 +33,27 @@ public class VoucherOrder implements Serializable {
     private Long id;
 
     /**
-     * 下单的用户id
+     * 下單的用户id
      */
     private Long userId;
 
     /**
-     * 购买的代金券id
+     * 購買的代金券id
      */
     private Long voucherId;
 
     /**
-     * 支付方式 1：余额支付；2：支付宝；3：微信
+     * 支付方式 1：餘額支付；2：支付宝；3：微信
      */
     private Integer payType;
 
     /**
-     * 订单状态，1：未支付；2：已支付；3：已核销；4：已取消；5：退款中；6：已退款
+     * 定單狀態，1：未支付；2：已支付；3：已核销；4：已取消；5：退款中；6：已退款
      */
     private Integer status;
 
     /**
-     * 下单時間
+     * 下單時間
      */
     private LocalDateTime createTime;
 

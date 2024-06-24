@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author Evan
- * @since 2021-12-22
+ * @since 20240624
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -38,7 +38,7 @@ public class Follow implements Serializable {
     private Long userId;
 
     /**
-     * 关联的用户id
+     * 關联的用户id
      */
     private Long followUserId;
 
