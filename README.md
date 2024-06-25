@@ -13,3 +13,4 @@
 20240623 hotspot invalid resolution : logical expire, mutex  
 20240624 put services in utils and redis coupon uni key generator  
 20240624 seckill order create  
+20240625 one person one coupon , deal with transactional self-invocation  
