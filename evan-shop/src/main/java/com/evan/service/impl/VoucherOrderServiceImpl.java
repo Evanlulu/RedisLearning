@@ -8,8 +8,11 @@ import com.evan.service.ISeckillVoucherService;
 import com.evan.service.IVoucherOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.evan.utils.RedisIdWorker;
+import com.evan.utils.SimpleRedisLock;
 import com.evan.utils.UserHolder;
 import org.springframework.aop.framework.AopContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +35,8 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     
     @Resource
     private RedisIdWorker redisIdWorker;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public Result seckillVoucher(Long voucherId) {
@@ -44,11 +49,25 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
             return Result.fail("庫存不足");
         Long userId = UserHolder.getUser().getId();
 
-        //鎖要等事務提交再釋放 但如果放在方法明旁邊 是鎖這整個物件
-        synchronized (userId.toString().intern()) { //常量值 不然 toString 會導致每次被鎖的 號碼都不一樣 沒有辦法侷限人
-            //獲取事務代理對象
+//        //鎖要等事務提交再釋放 但如果放在方法明旁邊 是鎖這整個物件
+//        synchronized (userId.toString().intern()) { //常量值 不然 toString 會導致每次被鎖的 號碼都不一樣 沒有辦法侷限人
+//            //獲取事務代理對象
+//            IVoucherOrderService proxy = (IVoucherOrderService) AopContext.currentProxy();
+//            return proxy.createVoucherOrder(voucherId);
+
+        SimpleRedisLock lock = new SimpleRedisLock("order:" + userId, stringRedisTemplate);
+        boolean isLock = lock.tryLock(1200);
+        
+        if (!isLock){
+            //獲取失敗
+            return Result.fail("一人只能下一單");
+        }
+        try {
             IVoucherOrderService proxy = (IVoucherOrderService) AopContext.currentProxy();
             return proxy.createVoucherOrder(voucherId);
+        }finally {
+            //釋放鎖
+            lock.unlock();
         }
     }
 
