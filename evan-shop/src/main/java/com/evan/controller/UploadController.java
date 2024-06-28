@@ -20,7 +20,7 @@ public class UploadController {
     @PostMapping("blog")
     public Result uploadImage(@RequestParam("file") MultipartFile image) {
         try {
-            // 获取原始文件名称
+            // 獲取原始文件名称
             String originalFilename = image.getOriginalFilename();
             // 生成新文件名
             String fileName = createNewFileName(originalFilename);
@@ -45,7 +45,7 @@ public class UploadController {
     }
 
     private String createNewFileName(String originalFilename) {
-        // 获取后缀
+        // 獲取后缀
         String suffix = StrUtil.subAfter(originalFilename, ".", true);
         // 生成目录
         String name = UUID.randomUUID().toString();

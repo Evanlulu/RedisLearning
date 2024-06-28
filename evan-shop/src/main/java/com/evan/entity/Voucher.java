@@ -49,7 +49,7 @@ public class Voucher implements Serializable {
     private String subTitle;
 
     /**
-     * 使用规则
+     * 使用规則
      */
     private String rules;
 

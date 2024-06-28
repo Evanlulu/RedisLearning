@@ -17,4 +17,5 @@
 20240624 seckill order create  
 20240625 one person one coupon , deal with transactional self-invocation  
 20240626 Distributed Locking ,nginx proxy two server, simple redis lock  
-20240625 thread pend,  make try lock and unlock atom (Redis Lua)
+20240627 thread pend,  make try lock and unlock atom (Redis Lua)
+20240628 redisson

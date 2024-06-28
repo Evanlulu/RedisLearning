@@ -7,16 +7,16 @@ import cn.hutool.core.util.StrUtil;
  */
 public class RegexUtils {
     /**
-     * 是否是无效手机格式
-     * @param phone 要校验的手机号
+     * 是否是無效手機格式
+     * @param phone 要校驗的手機號
      * @return true:符合，false：不符合
      */
     public static boolean isPhoneInvalid(String phone){
         return mismatch(phone, RegexPatterns.PHONE_REGEX);
     }
     /**
-     * 是否是无效邮箱格式
-     * @param email 要校验的邮箱
+     * 是否是無效箱格式
+     * @param email 要校驗的郵箱
      * @return true:符合，false：不符合
      */
     public static boolean isEmailInvalid(String email){
@@ -24,15 +24,15 @@ public class RegexUtils {
     }
 
     /**
-     * 是否是无效验证码格式
-     * @param code 要校验的验证码
+     * 是否是無效驗證碼格式
+     * @param code 要校驗的驗證碼
      * @return true:符合，false：不符合
      */
     public static boolean isCodeInvalid(String code){
         return mismatch(code, RegexPatterns.VERIFY_CODE_REGEX);
     }
 
-    // 校验是否不符合正则格式
+    // 校驗是否不符合正則格式
     private static boolean mismatch(String str, String regex){
         if (StrUtil.isBlank(str)) {
             return true;
