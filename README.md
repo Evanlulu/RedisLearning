@@ -19,4 +19,5 @@
 20240626 Distributed Locking ,nginx proxy two server, simple redis lock  
 20240627 thread pend,  make try lock and unlock atom (Redis Lua)
 20240628 redisson api
-20240630 review
+20240630 review  
+20240701 redisson theory, multiThread, Reentrant  
