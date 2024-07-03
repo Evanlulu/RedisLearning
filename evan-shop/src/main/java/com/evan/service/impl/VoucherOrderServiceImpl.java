@@ -1,5 +1,6 @@
 package com.evan.service.impl;
 
+import cn.hutool.core.lang.UUID;
 import com.evan.dto.Result;
 import com.evan.entity.SeckillVoucher;
 import com.evan.entity.VoucherOrder;
@@ -14,16 +15,19 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.Collections;
 
 /**
  * <p>
- *  服務实现類
+ *  服務實現類
  * </p>
  *
  * @author Evan
@@ -42,40 +46,67 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     
     @Resource
     private RedissonClient redissonClient;
+    
+    private static final DefaultRedisScript<Long> SECKILL_SCRIPT;
+
+    static {
+        SECKILL_SCRIPT = new DefaultRedisScript<>();
+        SECKILL_SCRIPT.setLocation(new ClassPathResource("lua/seckill.lua"));
+        SECKILL_SCRIPT.setResultType(Long.class);
+    }
 
     @Override
     public Result seckillVoucher(Long voucherId) {
-        SeckillVoucher voucher = seckillVoucherService.getById(voucherId);
-        if (voucher.getBeginTime().isAfter(LocalDateTime.now()))
-            return Result.fail("秒殺尚未開始");
-        if (voucher.getEndTime().isBefore(LocalDateTime.now()))
-            return Result.fail("秒殺結束");
-        if (voucher.getStock() < 1)
-            return Result.fail("庫存不足");
         Long userId = UserHolder.getUser().getId();
+        //Lua
+        Long result = stringRedisTemplate.execute(
+                SECKILL_SCRIPT,
+                Collections.emptyList(),
+                voucherId.toString(), userId.toString()
+        );
+        //是否為0
+        int r = result.intValue();
+        if (r != 0 )
+            return Result.fail( r==1 ? "沒庫存" : "不能重複下單");
+        //為0可以購買 把下單放到阻塞對劣
+        long orderId = redisIdWorker.nextId("order");
+        //返回訂單
+        return  Result.ok(orderId);
+    }
 
-//        //鎖要等事務提交再釋放 但如果放在方法明旁邊 是鎖這整個物件
-//        synchronized (userId.toString().intern()) { //常量值 不然 toString 會導致每次被鎖的 號碼都不一樣 沒有辦法侷限人
-//            //獲取事務代理對象
+//    @Override
+//    public Result seckillVoucher(Long voucherId) {
+//        SeckillVoucher voucher = seckillVoucherService.getById(voucherId);
+//        if (voucher.getBeginTime().isAfter(LocalDateTime.now()))
+//            return Result.fail("秒殺尚未開始");
+//        if (voucher.getEndTime().isBefore(LocalDateTime.now()))
+//            return Result.fail("秒殺結束");
+//        if (voucher.getStock() < 1)
+//            return Result.fail("庫存不足");
+//        Long userId = UserHolder.getUser().getId();
+//
+////        //鎖要等事務提交再釋放 但如果放在方法明旁邊 是鎖這整個物件
+////        synchronized (userId.toString().intern()) { //常量值 不然 toString 會導致每次被鎖的 號碼都不一樣 沒有辦法侷限人
+////            //獲取事務代理對象
+////            IVoucherOrderService proxy = (IVoucherOrderService) AopContext.currentProxy();
+////            return proxy.createVoucherOrder(voucherId);
+//
+////        SimpleRedisLock lock = new SimpleRedisLock("order:" + userId, stringRedisTemplate);
+//        RLock lock = redissonClient.getLock("lock:order:" + userId);
+//        boolean isLock = lock.tryLock();
+//        
+//        if (!isLock){
+//            //獲取失敗
+//            return Result.fail("一人只能下一單");
+//        }
+//        try {
 //            IVoucherOrderService proxy = (IVoucherOrderService) AopContext.currentProxy();
 //            return proxy.createVoucherOrder(voucherId);
-
-//        SimpleRedisLock lock = new SimpleRedisLock("order:" + userId, stringRedisTemplate);
-        RLock lock = redissonClient.getLock("lock:order:" + userId);
-        boolean isLock = lock.tryLock();
-        
-        if (!isLock){
-            //獲取失敗
-            return Result.fail("一人只能下一單");
-        }
-        try {
-            IVoucherOrderService proxy = (IVoucherOrderService) AopContext.currentProxy();
-            return proxy.createVoucherOrder(voucherId);
-        }finally {
-            //釋放鎖
-            lock.unlock();
-        }
-    }
+//        }finally {
+//            //釋放鎖
+//            lock.unlock();
+//        }
+//    }
 
     @Transactional//這個會有問題 因為上一個 方法調用 是非代理對象 所以事務有可能失效
     public  Result createVoucherOrder(Long voucherId) {

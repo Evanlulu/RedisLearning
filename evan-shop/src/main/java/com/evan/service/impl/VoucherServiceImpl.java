@@ -7,15 +7,18 @@ import com.evan.mapper.VoucherMapper;
 import com.evan.entity.SeckillVoucher;
 import com.evan.service.ISeckillVoucherService;
 import com.evan.service.IVoucherService;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
 
+import static com.evan.utils.RedisConstants.SECKILL_STOCK_KEY;
+
 /**
  * <p>
- *  服務实现類
+ *  服務實現類
  * </p>
  *
  * @author Evan
@@ -26,6 +29,8 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
 
     @Resource
     private ISeckillVoucherService seckillVoucherService;
+    @Resource
+    private StringRedisTemplate redisTemplate;
 
     @Override
     public Result queryVoucherOfShop(Long shopId) {
@@ -47,5 +52,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
         seckillVoucher.setBeginTime(voucher.getBeginTime());
         seckillVoucher.setEndTime(voucher.getEndTime());
         seckillVoucherService.save(seckillVoucher);
+        //保存 到 redis中
+        redisTemplate.opsForValue().set(SECKILL_STOCK_KEY + voucher.getId(),voucher.getStock().toString());
     }
 }
