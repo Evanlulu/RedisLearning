@@ -4,8 +4,6 @@ import com.evan.dto.Result;
 import com.evan.entity.VoucherOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import javax.annotation.Resource;
-
 /**
  * <p>
  *  服務類
@@ -18,5 +16,5 @@ public interface IVoucherOrderService extends IService<VoucherOrder> {
     
     Result seckillVoucher(Long voucherId);
 
-    Result createVoucherOrder(Long voucherId);
+    void createVoucherOrder(VoucherOrder voucherOrder);
 }

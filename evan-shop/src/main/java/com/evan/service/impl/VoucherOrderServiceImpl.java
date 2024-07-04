@@ -1,16 +1,14 @@
 package com.evan.service.impl;
 
-import cn.hutool.core.lang.UUID;
 import com.evan.dto.Result;
-import com.evan.entity.SeckillVoucher;
 import com.evan.entity.VoucherOrder;
 import com.evan.mapper.VoucherOrderMapper;
 import com.evan.service.ISeckillVoucherService;
 import com.evan.service.IVoucherOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.evan.utils.RedisIdWorker;
-import com.evan.utils.SimpleRedisLock;
 import com.evan.utils.UserHolder;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.aop.framework.AopContext;
@@ -21,9 +19,13 @@ import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * <p>
@@ -34,6 +36,7 @@ import java.util.Collections;
  * @since 20240624
  */
 @Service
+@Slf4j
 public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, VoucherOrder> implements IVoucherOrderService {
     
     @Resource
@@ -48,11 +51,54 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     private RedissonClient redissonClient;
     
     private static final DefaultRedisScript<Long> SECKILL_SCRIPT;
+    private IVoucherOrderService proxy;
+
 
     static {
         SECKILL_SCRIPT = new DefaultRedisScript<>();
         SECKILL_SCRIPT.setLocation(new ClassPathResource("lua/seckill.lua"));
         SECKILL_SCRIPT.setResultType(Long.class);
+    }
+    private BlockingQueue<VoucherOrder> orderTasks = new ArrayBlockingQueue<>(1024*1024);
+    private static final  ExecutorService SECKILL_ORDER_EXECUTOR = Executors.newSingleThreadExecutor();
+    
+    @PostConstruct //初始化完執行
+    private void init(){
+        SECKILL_ORDER_EXECUTOR.submit(new VoucherOrderHandler());
+    }
+    
+    private class VoucherOrderHandler implements Runnable {
+
+        @Override
+        public void run() {
+            while (true) {
+                //獲取對列中的訂單信息
+                try {
+                    VoucherOrder voucherOrder = orderTasks.take();
+                    handleVoucherOrder(voucherOrder);
+                } catch (InterruptedException e) {
+                    log.error("處理訂單異常", e);
+                }
+            }
+        }
+    }
+
+    private void handleVoucherOrder(VoucherOrder voucherOrder) {
+        Long userId = voucherOrder.getUserId();
+        RLock lock = redissonClient.getLock("lock:order:" + userId);
+        boolean isLock = lock.tryLock();
+
+        if (!isLock){
+            //獲取失敗
+            log.error("不允許重複下單");
+            return ;
+        }
+        try {
+           proxy.createVoucherOrder(voucherOrder);
+        }finally {
+            //釋放鎖
+            lock.unlock();
+        }
     }
 
     @Override
@@ -68,8 +114,15 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         int r = result.intValue();
         if (r != 0 )
             return Result.fail( r==1 ? "沒庫存" : "不能重複下單");
-        //為0可以購買 把下單放到阻塞對劣
+        //為0可以購買 把下單放到阻塞對列
+        VoucherOrder voucherOrder = new VoucherOrder();
         long orderId = redisIdWorker.nextId("order");
+        voucherOrder.setId(orderId);
+        voucherOrder.setUserId(userId);
+        voucherOrder.setVoucherId(voucherId);
+        //阻塞對列
+        orderTasks.add(voucherOrder);
+         proxy = (IVoucherOrderService) AopContext.currentProxy();//注意子限程會拿不到主線程的代理對象
         //返回訂單
         return  Result.ok(orderId);
     }
@@ -109,28 +162,26 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 //    }
 
     @Transactional//這個會有問題 因為上一個 方法調用 是非代理對象 所以事務有可能失效
-    public  Result createVoucherOrder(Long voucherId) {
-        Long userId = UserHolder.getUser().getId();
-        int count = query().eq("user_id", userId).eq("voucher_id", voucherId).count();
-            if (count > 0)
-                return Result.fail("一個用戶一個優惠券");
+    public void createVoucherOrder(VoucherOrder voucherOrder) {
+        Long userId = voucherOrder.getUserId();
+        int count = query().eq("user_id", userId).eq("voucher_id", voucherOrder.getVoucherId()).count();
+            if (count > 0){
+                log.error("不許重複下單");
+                return;
+            }
 
             boolean success = seckillVoucherService.update()
                     .setSql("stock = stock - 1")
-                    .eq("voucher_id", voucherId)
+                    .eq("voucher_id", voucherOrder.getVoucherId())
                     .gt("stock", 0) //利用庫存統一決高併發線程問題  但因為樂觀鎖增加失敗問題 庫存卻未售罄 解決方式 > 0
                     .update();
-            if (!success)
-                return Result.fail("庫存不足");
-
-            VoucherOrder voucherOrder = new VoucherOrder();
-            long orderId = redisIdWorker.nextId("order");
-            voucherOrder.setId(orderId);
-            voucherOrder.setUserId(userId);
-            voucherOrder.setVoucherId(voucherId);
+            if (!success){
+                log.error("庫存不足");
+                return;
+            }
+            
             save(voucherOrder);
-       
-        return Result.ok(orderId);
+            
         
     }
 }
