@@ -23,4 +23,8 @@
 20240701 redisson theory, multiThread, Reentrant  
 20240702 how to enhence process take service to lua implement async  
 20240703 redis + Lua check can order
-20240704 jvm async blockQueue
+
+## Redis MQ learning
+
+20240704 jvm async blockQueue  
+20240705 Redis list pubsub  stream
