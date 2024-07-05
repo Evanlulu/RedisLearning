@@ -33,7 +33,7 @@ public class VoucherOrder implements Serializable {
     private Long id;
 
     /**
-     * 下單的用户id
+     * 下單的用戶id
      */
     private Long userId;
 

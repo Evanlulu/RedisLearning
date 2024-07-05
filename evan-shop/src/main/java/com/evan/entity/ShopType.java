@@ -34,7 +34,7 @@ public class ShopType implements Serializable {
     private Long id;
 
     /**
-     * 類型名称
+     * 類型名稱
      */
     private String name;
 

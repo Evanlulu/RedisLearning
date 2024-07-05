@@ -28,13 +28,13 @@ public class UserInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * pk，用户id
+     * pk，用戶id
      */
     @TableId(value = "user_id", type = IdType.AUTO)
     private Long userId;
 
     /**
-     * 城市名称
+     * 城市名稱
      */
     private String city;
 
@@ -44,12 +44,12 @@ public class UserInfo implements Serializable {
     private String introduce;
 
     /**
-     * 粉丝数量
+     * 粉丝數量
      */
     private Integer fans;
 
     /**
-     * 關注的人的数量
+     * 關注的人的數量
      */
     private Integer followee;
 

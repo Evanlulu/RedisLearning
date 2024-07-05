@@ -33,25 +33,25 @@ public class Blog implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     /**
-     * 商户id
+     * 商戶id
      */
     private Long shopId;
     /**
-     * 用户id
+     * 用戶id
      */
     private Long userId;
     /**
-     * 用户图标
+     * 用戶图标
      */
     @TableField(exist = false)
     private String icon;
     /**
-     * 用户姓名
+     * 用戶姓名
      */
     @TableField(exist = false)
     private String name;
     /**
-     * 是否点赞过了
+     * 是否點讚过了
      */
     @TableField(exist = false)
     private Boolean isLike;
@@ -72,12 +72,12 @@ public class Blog implements Serializable {
     private String content;
 
     /**
-     * 点赞数量
+     * 點讚數量
      */
     private Integer liked;
 
     /**
-     * 评论数量
+     * 评论數量
      */
     private Integer comments;
 

@@ -68,10 +68,10 @@ public class UserController {
 
     @GetMapping("/info/{id}")
     public Result info(@PathVariable("id") Long userId){
-        // 查询详情
+        // 查询詳情
         UserInfo info = userInfoService.getById(userId);
         if (info == null) {
-            // 没有详情，应该是第一次查看详情
+            // 没有詳情，應該是第一次查看詳情
             return Result.ok();
         }
         info.setCreateTime(null);

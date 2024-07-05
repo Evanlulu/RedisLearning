@@ -20,7 +20,7 @@ public class UploadController {
     @PostMapping("blog")
     public Result uploadImage(@RequestParam("file") MultipartFile image) {
         try {
-            // 獲取原始文件名称
+            // 獲取原始文件名稱
             String originalFilename = image.getOriginalFilename();
             // 生成新文件名
             String fileName = createNewFileName(originalFilename);
@@ -38,21 +38,21 @@ public class UploadController {
     public Result deleteBlogImg(@RequestParam("name") String filename) {
         File file = new File(SystemConstants.IMAGE_UPLOAD_DIR, filename);
         if (file.isDirectory()) {
-            return Result.fail("错误的文件名称");
+            return Result.fail("错误的文件名稱");
         }
         FileUtil.del(file);
         return Result.ok();
     }
 
     private String createNewFileName(String originalFilename) {
-        // 獲取后缀
+        // 獲取后綴
         String suffix = StrUtil.subAfter(originalFilename, ".", true);
-        // 生成目录
+        // 生成目錄
         String name = UUID.randomUUID().toString();
         int hash = name.hashCode();
         int d1 = hash & 0xF;
         int d2 = (hash >> 4) & 0xF;
-        // 判断目录是否存在
+        // 判斷目錄是否存在
         File dir = new File(SystemConstants.IMAGE_UPLOAD_DIR, StrUtil.format("/blogs/{}/{}", d1, d2));
         if (!dir.exists()) {
             dir.mkdirs();

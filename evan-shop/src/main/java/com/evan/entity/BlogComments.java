@@ -33,7 +33,7 @@ public class BlogComments implements Serializable {
     private Long id;
 
     /**
-     * 用户id
+     * 用戶id
      */
     private Long userId;
 
@@ -58,7 +58,7 @@ public class BlogComments implements Serializable {
     private String content;
 
     /**
-     * 点赞数
+     * 點讚數
      */
     private Integer liked;
 
