@@ -51,7 +51,7 @@ public class Blog implements Serializable {
     @TableField(exist = false)
     private String name;
     /**
-     * 是否點讚过了
+     * 是否點讚過了
      */
     @TableField(exist = false)
     private Boolean isLike;
@@ -62,7 +62,7 @@ public class Blog implements Serializable {
     private String title;
 
     /**
-     * 探店的照片，最多9张，多张以","隔开
+     * 探店的照片，最多9張，多張以","隔开
      */
     private String images;
 

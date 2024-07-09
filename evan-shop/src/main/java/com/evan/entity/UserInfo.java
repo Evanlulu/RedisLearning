@@ -39,7 +39,7 @@ public class UserInfo implements Serializable {
     private String city;
 
     /**
-     * 个人介绍，不要超过128个字符
+     * 个人介绍，不要超過128个字符
      */
     private String introduce;
 

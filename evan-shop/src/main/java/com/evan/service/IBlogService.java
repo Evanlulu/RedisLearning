@@ -1,5 +1,6 @@
 package com.evan.service;
 
+import com.evan.dto.Result;
 import com.evan.entity.Blog;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +14,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IBlogService extends IService<Blog> {
 
+    Result queryHotBlog(Integer id);
+
+    Result queryBlogById(Long id);
+
+    Result likeBlog(Long id);
 }
