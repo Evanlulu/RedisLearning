@@ -27,10 +27,10 @@ public class UploadController {
             // 保存文件
             image.transferTo(new File(SystemConstants.IMAGE_UPLOAD_DIR, fileName));
             // 返回结果
-            log.debug("文件上传成功，{}", fileName);
+            log.debug("文件上傳成功，{}", fileName);
             return Result.ok(fileName);
         } catch (IOException e) {
-            throw new RuntimeException("文件上传失败", e);
+            throw new RuntimeException("文件上傳失败", e);
         }
     }
 
@@ -38,14 +38,14 @@ public class UploadController {
     public Result deleteBlogImg(@RequestParam("name") String filename) {
         File file = new File(SystemConstants.IMAGE_UPLOAD_DIR, filename);
         if (file.isDirectory()) {
-            return Result.fail("错误的文件名稱");
+            return Result.fail("錯誤的文件名稱");
         }
         FileUtil.del(file);
         return Result.ok();
     }
 
     private String createNewFileName(String originalFilename) {
-        // 獲取后綴
+        // 獲取後綴
         String suffix = StrUtil.subAfter(originalFilename, ".", true);
         // 生成目錄
         String name = UUID.randomUUID().toString();
