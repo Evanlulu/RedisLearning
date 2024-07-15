@@ -7,10 +7,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.evan.dto.Result;
 import com.evan.dto.UserDTO;
 import com.evan.entity.Blog;
+import com.evan.entity.Follow;
 import com.evan.entity.User;
 import com.evan.mapper.BlogMapper;
 import com.evan.service.IBlogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.evan.service.IFollowService;
 import com.evan.service.IUserService;
 import com.evan.utils.SystemConstants;
 import com.evan.utils.UserHolder;
@@ -42,8 +44,10 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
     
     @Resource
     private StringRedisTemplate stringRedisTemplate;
-
-
+    
+    @Resource
+    private IFollowService followService;
+    
     @Override
     public Result queryHotBlog(Integer id) {
         // 根據用戶查询
@@ -127,5 +131,23 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
                 .map(user -> BeanUtil.copyProperties(user, UserDTO.class))
                 .collect(Collectors.toList());
         return Result.ok(userDTOS);
+    }
+
+    @Override
+    public Result saveBlog(Blog blog) {
+        UserDTO user = UserHolder.getUser();
+        blog.setUserId(user.getId());
+        boolean isSuccess = save(blog);
+        if (!isSuccess){
+            return Result.fail("新增筆記失敗");
+        }
+
+        List<Follow> follows = followService.query().eq("follow_user_id", user.getId()).list();
+        for (Follow follow : follows) {
+            Long userId = follow.getUserId();
+            String key = "feed:" + userId;
+            stringRedisTemplate.opsForZSet().add(key, blog.getId().toString(), System.currentTimeMillis());
+        }
+        return Result.ok(blog.getId());
     }
 }
