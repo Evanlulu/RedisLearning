@@ -75,7 +75,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
     public Result queryBlogById(Long id) {
         Blog blog = getById(id);
         if (blog == null)
-            return Result.fail("筆記不存在");
+            return Result.fail("筆記不存在"); 
         queryBlogUser(blog);
         isBlogLiked(blog);
         return Result.ok(blog);
