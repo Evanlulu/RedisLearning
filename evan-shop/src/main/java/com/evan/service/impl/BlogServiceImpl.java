@@ -5,6 +5,7 @@ import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.evan.dto.Result;
+import com.evan.dto.ScrollResult;
 import com.evan.dto.UserDTO;
 import com.evan.entity.Blog;
 import com.evan.entity.Follow;
@@ -18,15 +19,18 @@ import com.evan.utils.SystemConstants;
 import com.evan.utils.UserHolder;
 import jodd.util.StringUtil;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.evan.utils.RedisConstants.BLOG_LIKED_KEY;
+import static com.evan.utils.RedisConstants.FEED_KEY;
 
 /**
  * <p>
@@ -149,5 +153,51 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
             stringRedisTemplate.opsForZSet().add(key, blog.getId().toString(), System.currentTimeMillis());
         }
         return Result.ok(blog.getId());
+    }
+
+    @Override
+    public Result queryBlogOfFollow(Long max, Integer offset) {
+
+        // 當前用戶
+        Long userId = UserHolder.getUser().getId();
+        //查詢收件
+        String key = FEED_KEY + userId;
+        Set<ZSetOperations.TypedTuple<String>> typedTuples = stringRedisTemplate.opsForZSet()
+                .reverseRangeByScoreWithScores(key, 0, max, offset, 2);
+        if (typedTuples == null || typedTuples.isEmpty())
+            return Result.ok();
+        List<Long> ids = new ArrayList<>(typedTuples.size());
+        long minTime = 0 ;
+        int os = 1;
+        //解析數據 blogId, score(時間戳), offset(上次查詢最小值)
+        for (ZSetOperations.TypedTuple<String> tuple : typedTuples) {
+            ids.add(Long.valueOf(tuple.getValue()));
+            long time = tuple.getScore().longValue();
+            if(time == minTime){
+                os ++ ;
+            }else{
+                minTime = time;
+                os = 1 ;
+            }
+
+        }
+
+        //id 查詢 blog
+        String idStr = StrUtil.join(",", ids);
+        List<Blog> blogs = query()
+                .in("id", ids)
+                .last("ORDER BY FIELD(id," + idStr + ")").list();
+
+        for (Blog blog : blogs) {
+            queryBlogUser(blog);
+            isBlogLiked(blog);
+        }
+
+        ScrollResult r = new ScrollResult();
+        r.setList(blogs);
+        r.setOffset(os);
+        r.setMinTime(minTime);
+
+        return Result.ok(r);
     }
 }
