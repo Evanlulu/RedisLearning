@@ -192,6 +192,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
             distanceMap.put(shopIdStr, distance);
         });
         String idStr = StrUtil.join(",", ids);
+        
         List<Shop> shops = query().in("id", ids).last("ORDER BY FIELD(id," + idStr + ")").list();
 
         for (Shop shop : shops) {
