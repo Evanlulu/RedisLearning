@@ -141,8 +141,8 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
     public Result saveBlog(Blog blog) {
         UserDTO user = UserHolder.getUser();
         blog.setUserId(user.getId());
-        boolean isSuccess = save(blog);
-        if (!isSuccess){
+        boolean save = save(blog);
+        if (!save){
             return Result.fail("新增筆記失敗");
         }
 
