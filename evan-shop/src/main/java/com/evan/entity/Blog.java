@@ -41,7 +41,7 @@ public class Blog implements Serializable {
      */
     private Long userId;
     /**
-     * 用戶图标
+     * 用戶圖標
      */
     @TableField(exist = false)
     private String icon;
@@ -77,7 +77,7 @@ public class Blog implements Serializable {
     private Integer liked;
 
     /**
-     * 评论數量
+     * 評論數量
      */
     private Integer comments;
 

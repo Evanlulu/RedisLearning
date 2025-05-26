@@ -70,6 +70,8 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     
     @PostConstruct //初始化完執行
     private void init(){
+        //嘗試創建 consumer group
+        stringRedisTemplate.opsForStream().createGroup("stream.orders", ReadOffset.latest(), "g1");
         SECKILL_ORDER_EXECUTOR.submit(new VoucherOrderHandler());
     }
     

@@ -3,7 +3,6 @@ package com.evan.controller;
 
 import com.evan.dto.Result;
 import com.evan.service.IFollowService;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

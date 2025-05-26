@@ -43,12 +43,12 @@ public class BlogComments implements Serializable {
     private Long blogId;
 
     /**
-     * 關联的1级评论id，如果是一级评论，則值为0
+     * 關聯的1级評論id，如果是一级評論，則值为0
      */
     private Long parentId;
 
     /**
-     * 回复的评论id
+     * 回复的評論id
      */
     private Long answerId;
 

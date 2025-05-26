@@ -39,12 +39,12 @@ public class ShopType implements Serializable {
     private String name;
 
     /**
-     * 图标
+     * 圖標
      */
     private String icon;
 
     /**
-     * 顺序
+     * 順序
      */
     private Integer sort;
 
